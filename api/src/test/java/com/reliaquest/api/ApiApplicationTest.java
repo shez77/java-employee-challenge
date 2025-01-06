@@ -30,7 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
- * THIS IS AN INTEGRATION TEST THAT NEEDS THE ServerApplication IN THE SERVER MODULE TO BE RUNNING.
+ * THIS IS AN INTEGRATION TEST THAT REQUIRES THE ServerApplication IN THE SERVER MODULE TO BE RUNNING.
  * Note that the Test Order is important for this integration test to limit the number of calls to
  * the Mock Server and reuse the Employees obtained from the first test to test the other Controller
  * methods. Given time, a more efficient setup for the tests would be created.
