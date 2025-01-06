@@ -1,0 +1,6 @@
+spring.application.name: employee-api
+logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+server.port: 8111
+employee:
+  server: localhost
+  port: 8112
