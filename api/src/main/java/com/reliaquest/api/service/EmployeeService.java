@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,19 +26,14 @@ import org.springframework.web.client.RestClient;
  * served by the API Service.
  */
 @Service
+@Slf4j
 class EmployeeService implements IEmployeeService {
 
-    private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
     private final RestClient restClient;
     private final EmployeeCacheService employeeCacheService;
 
-    EmployeeService(
-            @Value("${employee.server}") final String server,
-            @Value("${employee.port}") final String port,
-            final EmployeeCacheService employeeCacheService) {
-        restClient = RestClient.builder()
-                .baseUrl(String.format("http://%s:%s", server, port))
-                .build();
+    public EmployeeService(final RestClient restClient, final EmployeeCacheService employeeCacheService) {
+        this.restClient = restClient;
         this.employeeCacheService = employeeCacheService;
     }
 
@@ -144,15 +137,12 @@ class EmployeeService implements IEmployeeService {
 }
 
 @Service
+@Slf4j
 class EmployeeCacheService {
-    private static final Logger log = LoggerFactory.getLogger(EmployeeCacheService.class);
     private final RestClient restClient;
 
-    EmployeeCacheService(
-            @Value("${employee.server}") final String server, @Value("${employee.port}") final String port) {
-        restClient = RestClient.builder()
-                .baseUrl(String.format("http://%s:%s", server, port))
-                .build();
+    public EmployeeCacheService(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     @Cacheable(value = "employees")
