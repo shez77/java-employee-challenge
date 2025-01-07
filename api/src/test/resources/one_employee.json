@@ -1,0 +1,11 @@
+{
+  "data": {
+    "id": "de567c35-3067-411b-957f-60f0f487cf9b",
+    "employee_name": "Dr. Homer Conn",
+    "employee_salary": 422300,
+    "employee_age": 55,
+    "employee_title": "Central Associate",
+    "employee_email": "ronstring@company.com"
+  },
+  "status": "Successfully processed request."
+}

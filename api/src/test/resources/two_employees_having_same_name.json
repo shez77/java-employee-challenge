@@ -1,0 +1,37 @@
+{
+  "data": [
+    {
+      "id": "bf5aa5f8-6d4d-4c4c-ab17-7f6861c05549",
+      "employee_name": "Mandy O'Hara",
+      "employee_salary": 61996,
+      "employee_age": 44,
+      "employee_title": "Forward Manufacturing Engineer",
+      "employee_email": "cosmococo@company.com"
+    },
+    {
+      "id": "90f31ba6-e718-435d-9cd2-9ef51e627b4b",
+      "employee_name": "Katie Sipes",
+      "employee_salary": 95795,
+      "employee_age": 32,
+      "employee_title": "Construction Agent",
+      "employee_email": "bamity@company.com"
+    },
+    {
+      "id": "5637d5f0-c628-40ca-9d98-7a64ddc93f44",
+      "employee_name": "Katie Sipes",
+      "employee_salary": 309614,
+      "employee_age": 16,
+      "employee_title": "Construction Designer",
+      "employee_email": "konklux@company.com"
+    },
+    {
+      "id": "6a165903-2354-4e38-8e9b-9cdeba0ce751",
+      "employee_name": "Ivette Leuschke MD",
+      "employee_salary": 32853,
+      "employee_age": 66,
+      "employee_title": "Design Analyst",
+      "employee_email": "namfix@company.com"
+    }
+  ],
+  "status": "Successfully processed request."
+}

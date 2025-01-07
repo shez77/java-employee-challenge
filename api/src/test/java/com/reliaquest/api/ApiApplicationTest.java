@@ -39,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnableCaching
+@DisplayName("ApiApplicationTest: REQUIRES ServerApplication TO BE RUNNING !!!")
 class ApiApplicationTest {
 
     private static final Logger log = LoggerFactory.getLogger(ApiApplicationTest.class);

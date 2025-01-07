@@ -34,7 +34,8 @@ public class MockEmployeeService {
 
     public MockEmployee create(@NonNull CreateMockEmployeeInput input) {
         final var mockEmployee = MockEmployee.from(
-                ServerConfiguration.EMAIL_TEMPLATE.formatted(faker.twitter().userName().toLowerCase()),
+                ServerConfiguration.EMAIL_TEMPLATE.formatted(
+                        faker.twitter().userName().toLowerCase()),
                 input);
         mockEmployees.add(mockEmployee);
         log.debug("Added employee: {}", mockEmployee);

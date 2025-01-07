@@ -28,13 +28,12 @@ import org.springframework.web.client.RestClient;
 @Service
 @Slf4j
 class EmployeeService implements IEmployeeService {
-
-    private final RestClient restClient;
     private final EmployeeCacheService employeeCacheService;
+    private final RestClient.Builder restClientBuilder;
 
-    public EmployeeService(final RestClient restClient, final EmployeeCacheService employeeCacheService) {
-        this.restClient = restClient;
+    public EmployeeService(EmployeeCacheService employeeCacheService, RestClient.Builder restClientBuilder) {
         this.employeeCacheService = employeeCacheService;
+        this.restClientBuilder = restClientBuilder;
     }
 
     @Override
@@ -53,15 +52,21 @@ class EmployeeService implements IEmployeeService {
     public Employee getEmployeeById(String id) {
         Response<RepositoryEmployee> response = null;
         try {
-            response = restClient
+            response = restClientBuilder
+                    .build()
                     .get()
                     .uri("/api/v1/employee/{id}", id)
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {});
+            if (response.data() == null) {
+                var msg = String.format("Employee with ID %s Does Not Exist.", id);
+                log.info(msg);
+                throw new EmployeeNotFoundException(msg);
+            }
         } catch (HttpClientErrorException e) {
             var msg = String.format("Employee with ID %s Does Not Exist.", id);
             log.info(msg);
-            throw new EmployeeNotFoundException(msg);
+            throw new EmployeeNotFoundException(msg, e);
         } catch (HttpServerErrorException e) {
             log.error("Got an error from MockEmployeeService : {}", response.error());
             throw new UnableToObtainEmployeesException("Employee could not be obtained due to an error.");
@@ -76,7 +81,8 @@ class EmployeeService implements IEmployeeService {
         List<Employee> deleteCandidateEmployees = getEmployeesByExactNameMatch(employeeToDelete.name());
         if (deleteCandidateEmployees.size() == 1
                 && deleteCandidateEmployees.get(0).id().equals(UUID.fromString(id))) {
-            Response<Boolean> response = restClient
+            Response<Boolean> response = restClientBuilder
+                    .build()
                     .method(HttpMethod.DELETE)
                     .uri("/api/v1/employee")
                     .contentType(APPLICATION_JSON)
@@ -103,7 +109,8 @@ class EmployeeService implements IEmployeeService {
     @CacheEvict(value = "employees", allEntries = true)
     public Employee createEmployee(Employee employeeInput) {
         EmployeeCreate employeeCreatePayload = EmployeeMapper.mapToRepositoryEmployee(employeeInput);
-        Response<RepositoryEmployee> response = restClient
+        Response<RepositoryEmployee> response = restClientBuilder
+                .build()
                 .method(HttpMethod.POST)
                 .uri("/api/v1/employee")
                 .contentType(APPLICATION_JSON)
@@ -127,6 +134,11 @@ class EmployeeService implements IEmployeeService {
                 .collect(toList());
     }
 
+    @CacheEvict(value = "employees", allEntries = true)
+    public void restEmployeeCache() {
+        log.info("Removed the Employee Cache.");
+    }
+
     private List<Employee> getEmployeesByExactNameMatch(String nameFragment) {
         return getAllEmployees().stream()
                 .filter(emp -> Objects.nonNull(emp.name()) && emp.name().equalsIgnoreCase(nameFragment))
@@ -139,24 +151,25 @@ class EmployeeService implements IEmployeeService {
 @Service
 @Slf4j
 class EmployeeCacheService {
-    private final RestClient restClient;
+    private final RestClient.Builder restClientBuilder;
 
-    public EmployeeCacheService(RestClient restClient) {
-        this.restClient = restClient;
+    public EmployeeCacheService(RestClient.Builder restClientBuilder) {
+        this.restClientBuilder = restClientBuilder;
     }
 
     @Cacheable(value = "employees")
     public List<Employee> getAllEmployees() {
         log.info("Called Get All Employees Cached.");
-        var obtainedEmployees = restClient
+        var response = restClientBuilder
+                .build()
                 .get()
                 .uri("/api/v1/employee")
                 .retrieve()
                 .body(new ParameterizedTypeReference<Response<List<RepositoryEmployee>>>() {});
-        if (Response.Status.ERROR == obtainedEmployees.status()) {
+        if (Response.Status.ERROR == response.status()) {
             throw new UnableToObtainEmployeesException("Employees could not be obtained due to an error.");
         }
-        List<RepositoryEmployee> data = obtainedEmployees.data() != null ? obtainedEmployees.data() : List.of();
-        return data.stream().map(EmployeeMapper::mapToEmployee).toList();
+        List<RepositoryEmployee> employees = response.data() != null ? response.data() : List.of();
+        return employees.stream().map(EmployeeMapper::mapToEmployee).toList();
     }
 }

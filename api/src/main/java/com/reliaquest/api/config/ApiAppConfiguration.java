@@ -21,10 +21,8 @@ public class ApiAppConfiguration {
     }
 
     @Bean
-    public RestClient restClient(
+    public RestClient.Builder restClientBuilder(
             @Value("${employee.server}") final String server, @Value("${employee.port}") final String port) {
-        return RestClient.builder()
-                .baseUrl(format("http://%s:%s", server, port))
-                .build();
+        return RestClient.builder().baseUrl(format("http://%s:%s", server, port));
     }
 }
